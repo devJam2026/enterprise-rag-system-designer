@@ -3,1868 +3,640 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enterprise RAG System Designer — Sandbox & Diagnostics</title>
   
+  <!-- Primary Meta Tags -->
+  <title>Enterprise RAG System Designer — Interactive Simulation Sandbox</title>
+  <meta name="title" content="Enterprise RAG System Designer — Interactive Simulation Sandbox">
+  <meta name="description" content="Design, simulate, and evaluate production-grade RAG architectures with ingestion, hybrid retrieval, reranking, citation-backed generation, and hallucination control. Built for enterprise-scale AI.">
+
+  <!-- Open Graph / Facebook / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rag.devjam.in/">
+  <meta property="og:title" content="Enterprise RAG System Designer — Interactive Simulation Sandbox">
+  <meta property="og:description" content="Stop building basic PDF chatbots. Learn to design, simulate, and optimize production-grade Retrieval-Augmented Generation architectures.">
+  <meta property="og:image" content="https://rag.devjam.in/og-preview.png">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <style>
-    /* CSS Custom Properties for Theme & Styling Tokens */
-    :root {
-      --bg-base: #0b0f19;
-      --bg-surface: rgba(17, 25, 40, 0.75);
-      --bg-card: rgba(22, 33, 54, 0.6);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(59, 130, 246, 0.2);
-      
-      --color-text-primary: #f3f4f6;
-      --color-text-secondary: #9ca3af;
-      --color-text-muted: #6b7280;
-
-      --accent-primary: #3b82f6; /* Blue */
-      --accent-secondary: #8b5cf6; /* Purple */
-      --accent-success: #10b981; /* Green/Emerald */
-      --accent-warning: #f59e0b; /* Amber */
-      --accent-danger: #ef4444; /* Red */
-      --accent-info: #06b6d4; /* Cyan */
-
-      --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-      --emerald-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --rose-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      --cyan-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-
-      --transition-fast: 0.2s ease;
-      --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-base);
-      color: var(--color-text-primary);
-      min-height: 100vh;
-      display: flex;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
-      background-attachment: fixed;
-    }
-
-    /* Scrollbar customization */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.20);
-    }
-
-    h1, h2, h3, h4 {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    /* Layout Structure */
-    .sidebar {
-      width: 280px;
-      background: rgba(10, 15, 30, 0.85);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(20px);
-    }
-
-    .sidebar-header {
-      padding: 24px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: var(--accent-gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
-    }
-
-    .logo-text h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      background: linear-gradient(120deg, #fff 40%, var(--accent-info) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .logo-text span {
-      font-size: 0.7rem;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      display: block;
-    }
-
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      overflow-y: auto;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      color: var(--color-text-secondary);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      border: 1px solid transparent;
-    }
-
-    .nav-item:hover {
-      color: var(--color-text-primary);
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.03);
-    }
-
-    .nav-item.active {
-      color: #fff;
-      background: rgba(59, 130, 246, 0.15);
-      border-color: rgba(59, 130, 246, 0.3);
-      box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.1);
-    }
-
-    .nav-item.active svg {
-      stroke: var(--accent-primary);
-    }
-
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid var(--border-color);
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .badge-devjam {
-      align-self: flex-start;
-      padding: 2px 8px;
-      background: rgba(6, 182, 212, 0.1);
-      border: 1px solid rgba(6, 182, 212, 0.2);
-      color: var(--accent-info);
-      font-weight: 600;
-      border-radius: 12px;
-      font-size: 0.7rem;
-    }
-
-    /* Main Container */
-    .main-content {
-      margin-left: 280px;
-      flex: 1;
-      padding: 40px;
-      max-width: 1400px;
-      width: calc(100% - 280px);
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-
-    /* Header Bar */
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .page-title h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-      background: linear-gradient(135deg, #ffffff 0%, #d1d5db 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .page-title p {
-      color: var(--color-text-secondary);
-      font-size: 0.95rem;
-    }
-
-    .quick-stats {
-      display: flex;
-      gap: 16px;
-    }
-
-    .stat-mini {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 10px 18px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      backdrop-filter: blur(10px);
-    }
-
-    .stat-mini-label {
-      font-size: 0.7rem;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-mini-val {
-      font-size: 1.1rem;
-      font-weight: 700;
-      font-family: 'Outfit', sans-serif;
-    }
-
-    .stat-mini-val.green { color: var(--accent-success); }
-    .stat-mini-val.cyan { color: var(--accent-info); }
-    .stat-mini-val.purple { color: var(--accent-secondary); }
-
-    /* Card Panels */
-    .panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      transition: box-shadow var(--transition-normal);
-      display: none;
-    }
-
-    .panel.active {
-      display: block;
-      animation: fadeIn 0.4s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .panel-header h2 {
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .panel-header p {
-      color: var(--color-text-secondary);
-      font-size: 0.9rem;
-      margin-top: 4px;
-    }
-
-    /* Grid Layouts inside labs */
-    .grid-2col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-
-    .grid-3col {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transition: var(--transition-fast);
-    }
-
-    .card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(22, 33, 54, 0.8);
-    }
-
-    /* Form Controls */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    textarea, input[type="text"], select {
-      background: rgba(10, 15, 30, 0.6);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: var(--transition-fast);
-    }
-
-    textarea:focus, input[type="text"]:focus, select:focus {
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .slider-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      color: var(--color-text-secondary);
-    }
-
-    .slider-value {
-      font-weight: 600;
-      color: var(--accent-info);
-    }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      outline: none;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-      transition: var(--transition-fast);
-    }
-
-    input[type="range"]::-webkit-slider-thumb:hover {
-      background: var(--accent-info);
-      transform: scale(1.1);
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: var(--transition-fast);
-      font-family: 'Outfit', sans-serif;
-    }
-
-    .btn-primary {
-      background: var(--accent-gradient);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
-    }
-
-    .btn-success {
-      background: var(--emerald-gradient);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-success:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--border-color);
-      color: var(--color-text-primary);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* UI Indicators */
-    .badge {
-      display: inline-flex;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .badge-primary { background: rgba(59, 130, 246, 0.15); color: var(--accent-primary); border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
-    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-info); border: 1px solid rgba(6, 182, 212, 0.3); }
-
-    /* ---------------------------------------------------- */
-    /* Tab 1: Chunking Strategy Lab Custom Styles */
-    /* ---------------------------------------------------- */
-    .chunks-visualization {
-      background: rgba(10, 15, 30, 0.8);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      height: 380px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .chunk-block {
-      border-left: 4px solid var(--accent-primary);
-      background: rgba(59, 130, 246, 0.04);
-      padding: 14px;
-      border-radius: 0 8px 8px 0;
-      position: relative;
-      transition: var(--transition-fast);
-      border-top: 1px solid rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-      border-right: 1px solid rgba(255, 255, 255, 0.02);
-    }
-
-    .chunk-block:hover {
-      background: rgba(59, 130, 246, 0.08);
-      border-left-color: var(--accent-info);
-    }
-
-    .chunk-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.75rem;
-    }
-
-    .chunk-id {
-      font-weight: 700;
-      font-family: 'Outfit', sans-serif;
-      color: #fff;
-    }
-
-    .chunk-meta {
-      color: var(--color-text-muted);
-    }
-
-    .chunk-text {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--color-text-secondary);
-    }
-
-    .overlap-highlight {
-      background: rgba(139, 92, 246, 0.2);
-      color: #fff;
-      border-radius: 2px;
-      padding: 0 2px;
-      font-weight: 500;
-    }
-
-    /* ---------------------------------------------------- */
-    /* Tab 2: Retrieval Playground Custom Styles */
-    /* ---------------------------------------------------- */
-    .retrieval-results {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .retrieval-card {
-      border: 1px solid var(--border-color);
-      background: rgba(22, 33, 54, 0.4);
-      padding: 20px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: var(--transition-fast);
-    }
-
-    .retrieval-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(22, 33, 54, 0.6);
-    }
-
-    .retrieval-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .doc-source {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--accent-info);
-    }
-
-    .score-meter {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-    }
-
-    .score-bar {
-      width: 80px;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .score-fill {
-      height: 100%;
-      background: var(--accent-gradient);
-    }
-
-    /* ---------------------------------------------------- */
-    /* Tab 3: Reranking Simulator Custom Styles */
-    /* ---------------------------------------------------- */
-    .rerank-container {
-      display: grid;
-      grid-template-columns: 1fr 120px 1fr;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .rerank-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 400px;
-    }
-
-    .rerank-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 16px;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      position: relative;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .rerank-item.boosted {
-      border-color: var(--accent-success);
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
-    }
-
-    .rerank-item.dropped {
-      opacity: 0.6;
-    }
-
-    .rank-badge {
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #fff;
-      border: 2px solid var(--bg-base);
-    }
-
-    .rerank-item.boosted .rank-badge {
-      background: var(--accent-success);
-    }
-
-    .rerank-divider {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      color: var(--color-text-muted);
-    }
-
-    .arrow-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ---------------------------------------------------- */
-    /* Tab 4: Citation & Guardrails Custom Styles */
-    /* ---------------------------------------------------- */
-    .citations-viewer {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .llm-output-box {
-      background: rgba(10, 15, 30, 0.7);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 24px;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      color: var(--color-text-primary);
-    }
-
-    .cite-tag {
-      background: rgba(6, 182, 212, 0.15);
-      border: 1px solid rgba(6, 182, 212, 0.3);
-      color: var(--accent-info);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-family: 'Fira Code', monospace;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-block;
-      margin: 0 2px;
-      transition: var(--transition-fast);
-    }
-
-    .cite-tag:hover {
-      background: var(--accent-info);
-      color: #000;
-    }
-
-    .cite-tag.active {
-      background: var(--accent-info);
-      color: #000;
-      box-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
-    }
-
-    .hallucination-warning {
-      background: rgba(239, 68, 68, 0.08);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      padding: 16px;
-      border-radius: 12px;
-      display: none;
-      align-items: flex-start;
-      gap: 12px;
-      animation: flashWarning 0.5s ease;
-    }
-
-    .hallucination-warning.active {
-      display: flex;
-    }
-
-    @keyframes flashWarning {
-      0% { transform: scale(0.98); opacity: 0; }
-      50% { border-color: rgba(239, 68, 68, 0.8); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Switch toggle */
-    .switch-group {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.02);
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 26px;
-    }
-
-    .switch input { 
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider-round {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
-      transition: .3s;
-      border-radius: 34px;
-      border: 1px solid var(--border-color);
-    }
-
-    .slider-round:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider-round {
-      background-color: var(--accent-danger);
-    }
-
-    input:checked + .slider-round:before {
-      transform: translateX(24px);
-    }
-
-    /* ---------------------------------------------------- */
-    /* Tab 5: Evaluation Lab Custom Styles */
-    /* ---------------------------------------------------- */
-    .gauge-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 24px;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      text-align: center;
-    }
-
-    .gauge-circle {
-      position: relative;
-      width: 120px;
-      height: 120px;
-    }
-
-    .gauge-svg {
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-    }
-
-    .gauge-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.05);
-      stroke-width: 8;
-    }
-
-    .gauge-progress {
-      fill: none;
-      stroke-width: 8;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 1s ease-in-out;
-    }
-
-    .gauge-value {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.5rem;
-      font-weight: 700;
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* ---------------------------------------------------- */
-    /* Tab 6: Production Dashboard Custom Styles */
-    /* ---------------------------------------------------- */
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .chart-container {
-      background: rgba(10, 15, 30, 0.7);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
-      height: 300px;
-      position: relative;
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .chart-line {
-      fill: none;
-      stroke: var(--accent-primary);
-      stroke-width: 3;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.5s ease;
-    }
-
-    .chart-area {
-      fill: url(#chart-gradient);
-      opacity: 0.15;
-    }
-
-    .chart-grid-line {
-      stroke: rgba(255, 255, 255, 0.05);
-      stroke-width: 1;
-    }
-
-    /* Animation effects */
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.2); }
-      50% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
-      100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.2); }
-    }
-
-    .pulse {
-      animation: pulseGlow 2s infinite;
-    }
-  </style>
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Navigation Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #fff;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <div class="nav-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-cyan)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>Enterprise RAG</span>
       </div>
-      <div class="logo-text">
-        <h2>RAG Designer</h2>
-        <span>Enterprise sandbox</span>
+      <div class="nav-links">
+        <a href="#why-exists">Why It Exists</a>
+        <a href="#pipeline-diagram">Architecture Explorer</a>
+        <a href="#simulator">Architecture Simulator</a>
+        <a href="#eval-dashboard">Evaluation</a>
+        <a href="#production-concerns">Production Concerns</a>
       </div>
     </div>
+  </nav>
 
-    <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="switchTab('chunking')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-        Chunking Strategy Lab
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container hero-content">
+      <span class="badge-tag">DevJam AI Engineer Roadmap</span>
+      <h1>Enterprise RAG<br>System Designer</h1>
+      <p>Design, simulate, and evaluate production-grade Retrieval-Augmented Generation architectures built for enterprise-scale AI platforms.</p>
+      
+      <div class="btn-group">
+        <a href="#pipeline-diagram" class="btn btn-gradient">
+          Explore Architecture
+        </a>
+        <a href="https://github.com/devJam2026/enterprise-rag-system-designer" target="_blank" class="btn btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          View GitHub
+        </a>
+        <a href="#collaboration" class="btn btn-outline">Join Collaboration</a>
       </div>
-      <div class="nav-item" onclick="switchTab('retrieval')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Retrieval Playground
-      </div>
-      <div class="nav-item" onclick="switchTab('reranking')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-        Reranking Simulator
-      </div>
-      <div class="nav-item" onclick="switchTab('citations')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Citation & Guardrails
-      </div>
-      <div class="nav-item" onclick="switchTab('evaluation')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        RAG Evaluation Lab
-      </div>
-      <div class="nav-item" onclick="switchTab('production')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Production Dashboard
-      </div>
-    </nav>
-
-    <div class="sidebar-footer">
-      <span class="badge-devjam">DevJam Engine</span>
-      <p>System Status: Online</p>
-      <p>&copy; 2026 Enterprise RAG</p>
     </div>
-  </aside>
+  </header>
 
-  <!-- Main Content Panel Area -->
-  <main class="main-content">
+  <!-- Section: Why This Project Exists -->
+  <section id="why-exists" class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Core Concept</span>
+      <h2>Beyond the Basic Chatbot Tutorial</h2>
+      <p>Why modern enterprise AI requires systems-level architecture instead of standard developer demos.</p>
+    </div>
 
-    <!-- Top Dashboard Header Info -->
-    <header class="header-bar">
-      <div class="page-title">
-        <h1 id="main-title">Chunking Strategy Lab</h1>
-        <p id="main-subtitle">Optimize document parsing and overlap strategies for maximize vector accuracy.</p>
+    <div class="why-grid">
+      <div class="comparison-box">
+        <h4 style="color: var(--color-rose);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          Standard Tutorial RAG (The Toy Box)
+        </h4>
+        <ul>
+          <li>❌ Basic PDF Text extractor → breaks on tables and layout changes</li>
+          <li>❌ Native simple chunking → splits key data sentences in half</li>
+          <li>❌ Vector-only retrieval → misses exact keyword filters</li>
+          <li>❌ No cross-encoder reranking → ranks irrelevant documents at the top</li>
+          <li>❌ Hallucination loops → no groundedness verification checks</li>
+        </ul>
       </div>
 
-      <div class="quick-stats">
-        <div class="stat-mini">
-          <span class="stat-mini-label">Active Sandbox</span>
-          <span class="stat-mini-val cyan" id="stat-sandbox">FastAPI Simulation</span>
-        </div>
-        <div class="stat-mini">
-          <span class="stat-mini-label">Average Faithfulness</span>
-          <span class="stat-mini-val green" id="stat-faithfulness">0.94</span>
-        </div>
-        <div class="stat-mini">
-          <span class="stat-mini-label">Monthly Simulated Cost</span>
-          <span class="stat-mini-val purple" id="stat-cost">$142.50</span>
-        </div>
+      <div class="comparison-box pro">
+        <h4 style="color: var(--color-emerald);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Production Enterprise RAG (The Standard)
+        </h4>
+        <ul>
+          <li>✅ Layout-aware parsers preserving tables and hierarchies</li>
+          <li>✅ Semantic-based chunk boundaries with overlay windows</li>
+          <li>✅ Hybrid dense + sparse search with Reciprocal Rank Fusion (RRF)</li>
+          <li>✅ Multi-stage Cross-Encoder reranking for precision boosting</li>
+          <li>✅ Real-time hallucination guardrails, citations, and tracing</li>
+        </ul>
       </div>
-    </header>
+    </div>
+  </section>
 
-    <!-- 1. CHUNKING STRATEGY LAB PANEL -->
-    <section id="panel-chunking" class="panel active">
-      <div class="panel-header">
-        <div>
-          <h2>Document Processing Sandbox</h2>
-          <p>Experiment with chunk size, overlap boundaries, and semantic splitting.</p>
-        </div>
-        <span class="badge badge-primary">Dynamic Visualization</span>
-      </div>
+  <!-- Section: Interactive RAG Architecture Diagram -->
+  <section id="pipeline-diagram" class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Interactive Explorer</span>
+      <h2>RAG Architecture Pipeline</h2>
+      <p>Click on any node in the architectural flow below to inspect its purpose, challenges, and lessons.</p>
+    </div>
 
-      <div class="grid-2col">
-        <!-- Input & Controls -->
-        <div class="card">
-          <div class="form-group">
-            <label for="chunking-source-text">Ingestion Document Source Text</label>
-            <textarea id="chunking-source-text">Our company financial performance in fiscal year 2025 demonstrated strong growth, with total revenue increasing by 12% to reach $45.2 million compared to $40.3 million in 2024. Operating income also expanded, reaching $8.4 million due to optimized cloud hosting frameworks and reduced operational overhead. However, marketing and customer acquisition costs rose by 22%, driven by aggressive domestic product positioning. Cash flow from operations remained resilient at $11.8 million, allowing full funding of our new AI retrieval infrastructure and Vector DB scaling projects.</textarea>
+    <div class="glass-panel diagram-explorer">
+      <!-- Architecture Nodes Grid -->
+      <div class="diagram-viewport">
+        <!-- Row 1: Ingestion -->
+        <div class="diagram-row">
+          <div class="diagram-node active" data-stage="documents" onclick="selectStage('documents')">
+            <span>Documents</span>
+            <span style="font-size: 0.6rem; color: var(--color-blue);">Ingestion</span>
           </div>
-
-          <div class="form-group">
-            <label for="chunk-strategy">Chunking Algorithm Strategy</label>
-            <select id="chunk-strategy" onchange="updateChunkingSliders()">
-              <option value="fixed">Fixed-Size Chunking</option>
-              <option value="recursive">Recursive Character Chunking</option>
-              <option value="semantic">Semantic Similarity Chunking</option>
-              <option value="sliding">Sliding Window Chunking</option>
-            </select>
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="ingestion" onclick="selectStage('ingestion')">
+            <span>Cleaning</span>
+            <span style="font-size: 0.6rem; color: var(--color-blue);">Normalize</span>
           </div>
-
-          <div class="slider-container" id="slider-chunk-size">
-            <div class="slider-header">
-              <span>Target Chunk Size (Characters)</span>
-              <span class="slider-value" id="val-chunk-size">120</span>
-            </div>
-            <input type="range" id="input-chunk-size" min="40" max="300" value="120" oninput="runChunking()">
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="chunking" onclick="selectStage('chunking')">
+            <span>Chunking</span>
+            <span style="font-size: 0.6rem; color: var(--color-cyan);">Splitting</span>
           </div>
-
-          <div class="slider-container" id="slider-chunk-overlap">
-            <div class="slider-header">
-              <span>Overlap Size (Characters)</span>
-              <span class="slider-value" id="val-chunk-overlap">20</span>
-            </div>
-            <input type="range" id="input-chunk-overlap" min="0" max="80" value="20" oninput="runChunking()">
-          </div>
-
-          <button class="btn btn-primary" onclick="runChunking()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Reparse & Index Chunks
-          </button>
-        </div>
-
-        <!-- Output Visualization -->
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-          <div class="grid-3col">
-            <div class="stat-mini">
-              <span class="stat-mini-label">Total Chunks</span>
-              <span class="stat-mini-val" id="info-total-chunks">4</span>
-            </div>
-            <div class="stat-mini">
-              <span class="stat-mini-label">Tokens Est.</span>
-              <span class="stat-mini-val" id="info-total-tokens">92</span>
-            </div>
-            <div class="stat-mini">
-              <span class="stat-mini-label">Avg. Similarity</span>
-              <span class="stat-mini-val" id="info-avg-similarity">0.82</span>
-            </div>
-          </div>
-
-          <div class="chunks-visualization" id="chunks-output-container">
-            <!-- Dynamically populated chunks -->
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="metadata" onclick="selectStage('metadata')">
+            <span>Metadata</span>
+            <span style="font-size: 0.6rem; color: var(--color-cyan);">Enrich</span>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 2. RETRIEVAL PLAYGROUND PANEL -->
-    <section id="panel-retrieval" class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Multi-Stage Search Playground</h2>
-          <p>Compare vector similarity vs keyword BM25 vs hybrid search models.</p>
-        </div>
-        <span class="badge badge-cyan">Hybrid Engine</span>
-      </div>
-
-      <div class="grid-2col">
-        <!-- Controls -->
-        <div class="card">
-          <div class="form-group">
-            <label for="retrieval-query">Search Query</label>
-            <input type="text" id="retrieval-query" value="How much did revenue grow in 2025?">
-          </div>
-
-          <div class="form-group">
-            <label for="retrieval-strategy">Retrieval Strategy</label>
-            <select id="retrieval-strategy">
-              <option value="vector">Dense Vector Search (Cosine Similarity)</option>
-              <option value="bm25">Sparse Search (BM25 Keyword Matching)</option>
-              <option value="hybrid" selected>Hybrid Search (Reciprocal Rank Fusion - RRF)</option>
-            </select>
-          </div>
-
-          <div class="slider-container">
-            <div class="slider-header">
-              <span>Top-K Documents to Retrieve</span>
-              <span class="slider-value" id="val-top-k">3</span>
-            </div>
-            <input type="range" id="input-top-k" min="1" max="5" value="3" oninput="document.getElementById('val-top-k').innerText=this.value">
-          </div>
-
-          <div class="form-group">
-            <label>Retrieval Settings</label>
-            <label style="font-size: 0.8rem; font-weight: normal; color: var(--color-text-secondary); display: flex; align-items: center; gap: 8px;">
-              <input type="checkbox" id="check-query-expansion" checked> Enable Query Expansion (HyDE)
-            </label>
-          </div>
-
-          <button class="btn btn-primary" onclick="runRetrieval()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            Query Retrieval Engine
-          </button>
+        <!-- Row Divider Vertical -->
+        <div style="display:flex; justify-content: flex-end; padding-right: 50px;">
+          <span class="diagram-arrow" style="transform: rotate(90deg); display: block;">&rarr;</span>
         </div>
 
-        <!-- Results Output -->
-        <div class="retrieval-results" id="retrieval-results-container">
-          <!-- Dynamically populated search hits -->
+        <!-- Row 2: Vector & Search -->
+        <div class="diagram-row">
+          <div class="diagram-node" data-stage="retrieval" onclick="selectStage('retrieval')">
+            <span>Hybrid Search</span>
+            <span style="font-size: 0.6rem; color: var(--color-emerald);">Retrieval</span>
+          </div>
+          <span class="diagram-arrow">&larr;</span>
+          <div class="diagram-node" data-stage="vectordb" onclick="selectStage('vectordb')">
+            <span>Vector DB</span>
+            <span style="font-size: 0.6rem; color: var(--color-purple);">Storage</span>
+          </div>
+          <span class="diagram-arrow">&larr;</span>
+          <div class="diagram-node" data-stage="embeddings" onclick="selectStage('embeddings')">
+            <span>Embeddings</span>
+            <span style="font-size: 0.6rem; color: var(--color-purple);">Generation</span>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 3. RERANKING SIMULATOR PANEL -->
-    <section id="panel-reranking" class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Cross-Encoder Reranking Simulator</h2>
-          <p>See how multi-stage retrieval models prioritize precision after initial vector extraction.</p>
+        <!-- Row Divider Vertical -->
+        <div style="display:flex; justify-content: flex-start; padding-left: 50px;">
+          <span class="diagram-arrow" style="transform: rotate(90deg); display: block;">&rarr;</span>
         </div>
-        <span class="badge badge-success">Precision Boost</span>
+
+        <!-- Row 3: Generator -->
+        <div class="diagram-row">
+          <div class="diagram-node" data-stage="reranking" onclick="selectStage('reranking')">
+            <span>Reranking</span>
+            <span style="font-size: 0.6rem; color: var(--color-emerald);">Stage-2</span>
+          </div>
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="context" onclick="selectStage('context')">
+            <span>Context Builder</span>
+            <span style="font-size: 0.6rem; color: var(--color-amber);">Assembly</span>
+          </div>
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="llm" onclick="selectStage('llm')">
+            <span>LLM Response</span>
+            <span style="font-size: 0.6rem; color: var(--color-amber);">Synthesis</span>
+          </div>
+          <span class="diagram-arrow">&rarr;</span>
+          <div class="diagram-node" data-stage="citations" onclick="selectStage('citations')">
+            <span>Citation Engine</span>
+            <span style="font-size: 0.6rem; color: var(--color-amber);">Attribution</span>
+          </div>
+        </div>
+
+        <!-- Row Divider Vertical -->
+        <div style="display:flex; justify-content: flex-end; padding-right: 50px;">
+          <span class="diagram-arrow" style="transform: rotate(90deg); display: block;">&rarr;</span>
+        </div>
+
+        <!-- Row 4: Evaluation / Diagnostics -->
+        <div class="diagram-row" style="justify-content: flex-end; gap: 32px;">
+          <div class="diagram-node" data-stage="observability" onclick="selectStage('observability')" style="max-width: 200px;">
+            <span>Observability & Tracing</span>
+            <span style="font-size: 0.6rem; color: var(--color-rose);">Diagnostics</span>
+          </div>
+          <div class="diagram-node" data-stage="eval" onclick="selectStage('eval')" style="max-width: 200px;">
+            <span>Evaluation Layer</span>
+            <span style="font-size: 0.6rem; color: var(--color-rose);">RAGAS Metrics</span>
+          </div>
+        </div>
+
       </div>
 
-      <div class="card" style="margin-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h3 style="margin-bottom: 4px;">Query: "Cloud hosting cost optimization projects"</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.85rem;">Standard vector search retrieves broad matches, but rerankers re-evaluate deep semantic alignment.</p>
-          </div>
-          <button class="btn btn-success" id="btn-run-reranking" onclick="runReranking()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            Run Cross-Encoder Rerank
-          </button>
+      <!-- Detail Side Panel -->
+      <div class="diagram-detail-panel" id="detail-panel">
+        <span class="stage-badge badge-primary" id="stage-badge">Ingestion Stage</span>
+        <h3 id="stage-title">Raw Documents Ingestion</h3>
+        <p id="stage-desc" style="font-size: 0.9rem; color: var(--text-secondary);">Select an architectural block to view details.</p>
+        
+        <div style="margin-top: 10px;">
+          <strong style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-rose); display: block; margin-bottom: 4px;">Enterprise Challenge</strong>
+          <p id="stage-challenge" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <strong style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-emerald); display: block; margin-bottom: 4px;">DevJam Lesson Roadmap</strong>
+          <p id="stage-learning" style="font-size: 0.85rem; color: var(--text-secondary);"></p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="rerank-container">
-        <!-- Before Rerank -->
-        <div>
-          <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--color-text-secondary); text-align: center;">Stage 1: Vector Search Top-3</h4>
-          <div class="rerank-list" id="rerank-list-before">
-            <!-- Filled dynamically -->
-          </div>
-        </div>
+  <!-- Section: Learning Modules -->
+  <section class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Roadmap Scope</span>
+      <h2>Learning Syllabus & Objectives</h2>
+      <p>Every critical architectural block covered inside the Enterprise RAG System Designer lessons.</p>
+    </div>
 
-        <!-- Animation connector -->
-        <div class="rerank-divider">
-          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Re-scoring</span>
-          <div class="arrow-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </div>
-          <span style="font-size: 0.7rem; color: var(--color-text-muted);" id="rerank-status-text">Ready</span>
-        </div>
-
-        <!-- After Rerank -->
-        <div>
-          <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--color-text-secondary); text-align: center;">Stage 2: Cross-Encoder Reranked</h4>
-          <div class="rerank-list" id="rerank-list-after">
-            <!-- Filled dynamically -->
-          </div>
-        </div>
+    <div class="modules-grid">
+      <!-- 1 -->
+      <div class="module-card">
+        <div class="module-icon">📄</div>
+        <h3>Document Ingestion</h3>
+        <p>Build parsing pipelines that retain table formats, layouts, headers, and hierarchical text nodes.</p>
       </div>
-    </section>
-
-    <!-- 4. CITATIONS & GUARDRAILS PANEL -->
-    <section id="panel-citations" class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Citation & Guardrails Sandbox</h2>
-          <p>Trace answer claims to source documents and validate factual groundedness.</p>
-        </div>
-        <span class="badge badge-warning">Hallucination Prevention</span>
+      <!-- 2 -->
+      <div class="module-card">
+        <div class="module-icon">✂️</div>
+        <h3>Chunking Strategy</h3>
+        <p>Benchmark Recursive splits vs Semantic Chunking to preserve contextual boundaries.</p>
       </div>
-
-      <div class="grid-2col">
-        <!-- Controls and Settings -->
-        <div class="card">
-          <h3>Guardrail Configuration</h3>
-          
-          <div class="slider-container">
-            <div class="slider-header">
-              <span>Groundedness Validation Threshold</span>
-              <span class="slider-value">0.85</span>
-            </div>
-            <input type="range" min="0.5" max="1.0" step="0.05" value="0.85">
-          </div>
-
-          <div class="switch-group">
-            <div>
-              <span style="font-weight: 600; font-size: 0.9rem; display: block;">Simulate Hallucination</span>
-              <span style="font-size: 0.8rem; color: var(--color-text-muted);">Force model to output unsupported claims.</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggle-hallucination" onchange="toggleHallucinationSim()">
-              <span class="slider-round"></span>
-            </label>
-          </div>
-
-          <!-- Diagnostic Metrics -->
-          <div class="card" style="background: rgba(10, 15, 30, 0.4); margin-top: 10px;">
-            <h4 style="font-size: 0.85rem;">Factual Claims Verified</h4>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-              <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Groundedness Status</span>
-              <span class="badge badge-success" id="groundedness-status-badge">PASS</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-              <span style="font-size: 0.8rem; color: var(--color-text-secondary);">Attributed Claims Ratio</span>
-              <span style="font-size: 0.9rem; font-weight: 700; color: #fff;" id="claims-ratio">3 / 3 (100%)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Citations Viewer & Interactive Output -->
-        <div class="citations-viewer">
-          <div class="llm-output-box">
-            <h4 style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">LLM Generation Response</h4>
-            <div id="llm-response-text">
-              Our financial metrics show that the company achieved a total revenue of $45.2M <span class="cite-tag" onclick="highlightSource(1)">[Doc-A, Chunk 1]</span>, which is a 12% growth year-over-year. Operating costs decreased to $8.4M <span class="cite-tag" onclick="highlightSource(2)">[Doc-A, Chunk 2]</span> thanks to cloud infrastructure efficiency gains. This robust performance generated $11.8M in cash flow <span class="cite-tag" onclick="highlightSource(3)">[Doc-A, Chunk 3]</span> to fund expansion projects.
-            </div>
-          </div>
-
-          <!-- Source Chunk Viewer -->
-          <div class="card" id="citation-source-card" style="border-left: 4px solid var(--accent-info); min-height: 120px;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 6px;">
-              <span style="font-weight: 600; color: var(--accent-info);" id="source-card-title">Select a citation tag to inspect source chunk</span>
-              <span id="source-card-similarity">Similarity: N/A</span>
-            </div>
-            <p style="font-size: 0.85rem; line-height: 1.5; color: var(--color-text-secondary);" id="source-card-text">
-              Click on the blue [Doc-A, Chunk X] tags in the response above to view raw document source and semantic confidence validation.
-            </p>
-          </div>
-
-          <!-- Hallucination Guard Alert Box -->
-          <div class="hallucination-warning" id="hallucination-alert">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-danger)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <div>
-              <h4 style="color: var(--accent-danger); font-size: 0.9rem; margin-bottom: 4px;">Guardrail Violation: Groundedness Threshold Failure</h4>
-              <p style="font-size: 0.8rem; color: var(--color-text-secondary);">
-                The claims regarding "overall profit margins of 35%" were not found in the context chunks retrieved from index `Enterprise-Docs-V2`.
-              </p>
-            </div>
-          </div>
-        </div>
+      <!-- 3 -->
+      <div class="module-card">
+        <div class="module-icon">🧬</div>
+        <h3>Embeddings</h3>
+        <p>Explore dimension properties, custom token filters, and embedding models optimization.</p>
       </div>
-    </section>
-
-    <!-- 5. RAG EVALUATION LAB PANEL -->
-    <section id="panel-evaluation" class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Automated RAG Evaluation Suite</h2>
-          <p>Measure system quality using industry standard RAGAS and TruLens frameworks.</p>
-        </div>
-        <span class="badge badge-purple">Ragas Quality Check</span>
+      <!-- 4 -->
+      <div class="module-card">
+        <div class="module-icon">💾</div>
+        <h3>Vector Databases</h3>
+        <p>Configure HNSW, IVF index quantization, and optimize queries latency for millions of items.</p>
       </div>
-
-      <div class="card" style="margin-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-          <div>
-            <h3>Evaluate System Performance</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.85rem;">Calculates semantic scores across past 250 evaluation queries.</p>
-          </div>
-          <button class="btn btn-primary" onclick="runEvaluationSuite()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Trigger Suite Evaluation
-          </button>
-        </div>
+      <!-- 5 -->
+      <div class="module-card">
+        <div class="module-icon">🔍</div>
+        <h3>Hybrid Retrieval</h3>
+        <p>Combine dense vector search with keyword-based BM25 using Reciprocal Rank Fusion.</p>
       </div>
-
-      <div class="grid-4col" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-        <!-- Faithfulness -->
-        <div class="gauge-card">
-          <div class="gauge-circle">
-            <svg class="gauge-svg">
-              <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
-              <circle class="gauge-progress" id="gauge-faithfulness" cx="60" cy="60" r="50" stroke="var(--accent-success)" stroke-dasharray="314" stroke-dashoffset="60"></circle>
-            </svg>
-            <div class="gauge-value" id="val-gauge-faithfulness">81%</div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 4px;">Faithfulness</h4>
-            <p style="font-size: 0.75rem; color: var(--color-text-secondary);">Is the generated response strictly grounded in context?</p>
-          </div>
-        </div>
-
-        <!-- Answer Relevance -->
-        <div class="gauge-card">
-          <div class="gauge-circle">
-            <svg class="gauge-svg">
-              <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
-              <circle class="gauge-progress" id="gauge-relevance" cx="60" cy="60" r="50" stroke="var(--accent-info)" stroke-dasharray="314" stroke-dashoffset="40"></circle>
-            </svg>
-            <div class="gauge-value" id="val-gauge-relevance">87%</div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 4px;">Answer Relevance</h4>
-            <p style="font-size: 0.75rem; color: var(--color-text-secondary);">Does the generated answer directly address the question?</p>
-          </div>
-        </div>
-
-        <!-- Context Precision -->
-        <div class="gauge-card">
-          <div class="gauge-circle">
-            <svg class="gauge-svg">
-              <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
-              <circle class="gauge-progress" id="gauge-precision" cx="60" cy="60" r="50" stroke="var(--accent-secondary)" stroke-dasharray="314" stroke-dashoffset="30"></circle>
-            </svg>
-            <div class="gauge-value" id="val-gauge-precision">90%</div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 4px;">Context Precision</h4>
-            <p style="font-size: 0.75rem; color: var(--color-text-secondary);">Are the retrieved chunks highly relevant to the query?</p>
-          </div>
-        </div>
-
-        <!-- Context Recall -->
-        <div class="gauge-card">
-          <div class="gauge-circle">
-            <svg class="gauge-svg">
-              <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
-              <circle class="gauge-progress" id="gauge-recall" cx="60" cy="60" r="50" stroke="var(--accent-primary)" stroke-dasharray="314" stroke-dashoffset="50"></circle>
-            </svg>
-            <div class="gauge-value" id="val-gauge-recall">84%</div>
-          </div>
-          <div>
-            <h4 style="font-size: 0.95rem; margin-bottom: 4px;">Context Recall</h4>
-            <p style="font-size: 0.75rem; color: var(--color-text-secondary);">Did the system retrieve all the information needed to answer?</p>
-          </div>
-        </div>
+      <!-- 6 -->
+      <div class="module-card">
+        <div class="module-icon">⚡</div>
+        <h3>Reranking</h3>
+        <p>Use Cross-Encoder architectures to filter out irrelevant contexts and boost Top-K precision.</p>
       </div>
-    </section>
+      <!-- 7 -->
+      <div class="module-card">
+        <div class="module-icon">✍️</div>
+        <h3>Grounded Generation</h3>
+        <p>Enforce strict citations formatting, mapping outputs directly back to source documents.</p>
+      </div>
+      <!-- 8 -->
+      <div class="module-card">
+        <div class="module-icon">🛡️</div>
+        <h3>Hallucination Control</h3>
+        <p>Implement post-generation guardrails checking for unsupported semantic assertions.</p>
+      </div>
+      <!-- 9 -->
+      <div class="module-card">
+        <div class="module-icon">📊</div>
+        <h3>RAG Evaluation</h3>
+        <p>Configure automated diagnostic metrics: Faithfulness, Answer Relevance, and Recall.</p>
+      </div>
+      <!-- 10 -->
+      <div class="module-card">
+        <div class="module-icon">👁️</div>
+        <h3>Observability</h3>
+        <p>Trace prompts, token limits, context values, and latency spans across all requests.</p>
+      </div>
+      <!-- 11 -->
+      <div class="module-card">
+        <div class="module-icon">📉</div>
+        <h3>Cost & Latency</h3>
+        <p>Use semantic cache strategies and prompt compression to reduce costs by 40-70%.</p>
+      </div>
+      <!-- 12 -->
+      <div class="module-card">
+        <div class="module-icon">🚀</div>
+        <h3>Scaling & Tenants</h3>
+        <p>Implement metadata partition filters to isolate clients data in multi-tenant environments.</p>
+      </div>
+    </div>
+  </section>
 
-    <!-- 6. PRODUCTION DASHBOARD PANEL -->
-    <section id="panel-production" class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Production Infrastructure Observability</h2>
-          <p>Real-time analytics, cost tracking, and system performance benchmarks.</p>
+  <!-- Section: Architecture Simulator Mock -->
+  <section id="simulator" class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Simulation Sandbox</span>
+      <h2>Architecture Settings Simulator</h2>
+      <p>Configure variables to see estimated latency, precision, monthly cost, and safety scores.</p>
+    </div>
+
+    <div class="glass-panel simulator-layout">
+      <!-- Left: Interactive Controls -->
+      <div class="simulator-controls">
+        
+        <div class="control-group">
+          <label>Document Index Scale</label>
+          <div class="btn-selector">
+            <button class="selector-btn" onclick="selectOption('scale', '10K', this)">10K</button>
+            <button class="selector-btn active" onclick="selectOption('scale', '100K', this)">100K</button>
+            <button class="selector-btn" onclick="selectOption('scale', '1M', this)">1M</button>
+            <button class="selector-btn" onclick="selectOption('scale', '10M', this)">10M</button>
+          </div>
         </div>
-        <span class="badge badge-success">Active Dashboard</span>
+
+        <div class="control-group">
+          <label>Retrieval Mode</label>
+          <div class="btn-selector">
+            <button class="selector-btn" onclick="selectOption('retrieval', 'vector', this)">Vector Only</button>
+            <button class="selector-btn" onclick="selectOption('retrieval', 'bm25', this)">BM25 Only</button>
+            <button class="selector-btn active" onclick="selectOption('retrieval', 'hybrid', this)">Hybrid (RRF)</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Stage-2 Cross-Encoder Reranking</label>
+          <div class="btn-selector">
+            <button class="selector-btn active" onclick="selectOption('reranking', 'on', this)">ENABLED</button>
+            <button class="selector-btn" onclick="selectOption('reranking', 'off', this)">DISABLED</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Citation Attributions Mode</label>
+          <div class="btn-selector">
+            <button class="selector-btn" onclick="selectOption('citation', 'basic', this)">Basic Link</button>
+            <button class="selector-btn active" onclick="selectOption('citation', 'strict', this)">Strict Verification</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Automated Evaluations (Ragas)</label>
+          <div class="btn-selector">
+            <button class="selector-btn" onclick="selectOption('evaluation', 'off', this)">None</button>
+            <button class="selector-btn active" onclick="selectOption('evaluation', 'basic', this)">Sampled</button>
+            <button class="selector-btn" onclick="selectOption('evaluation', 'full', this)">Continuous</button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Metric Grid -->
-      <div class="metric-grid" style="margin-bottom: 24px;">
-        <div class="stat-mini" style="padding: 20px;">
-          <span class="stat-mini-label">P95 Latency</span>
-          <span class="stat-mini-val cyan" id="prod-latency">1.82s</span>
-          <span style="font-size: 0.7rem; color: var(--color-text-muted);">Retrieval + LLM time</span>
+      <!-- Right: Real-time Metric Outputs -->
+      <div class="simulator-metrics">
+        
+        <div class="metric-bar-group">
+          <div class="metric-header">
+            <span class="metric-name">Retrieval Precision</span>
+            <span class="metric-val" id="metric-precision-val">84%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="metric-precision-fill" style="width: 84%;"></div>
+          </div>
         </div>
-        <div class="stat-mini" style="padding: 20px;">
-          <span class="stat-mini-label">Semantic Cache Hit Rate</span>
-          <span class="stat-mini-val green" id="prod-cache">68.4%</span>
-          <span style="font-size: 0.7rem; color: var(--color-text-muted);">Reduces LLM invocation cost</span>
-        </div>
-        <div class="stat-mini" style="padding: 20px;">
-          <span class="stat-mini-label">Token Cost per 1K Queries</span>
-          <span class="stat-mini-val purple" id="prod-token-cost">$0.34</span>
-          <span style="font-size: 0.7rem; color: var(--color-text-muted);">Optimized using Context Trimming</span>
-        </div>
-        <div class="stat-mini" style="padding: 20px;">
-          <span class="stat-mini-label">Failure Rate</span>
-          <span class="stat-mini-val" id="prod-failure" style="color: var(--accent-success);">0.04%</span>
-          <span style="font-size: 0.7rem; color: var(--color-text-muted);">API timeout / fallback triggers</span>
-        </div>
-      </div>
 
-      <div class="grid-2col">
-        <!-- Live chart simulation -->
-        <div class="chart-container">
-          <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; justify-content: space-between;">
-            <span>Simulated System Traffic (QPS)</span>
-            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem; border-radius: 6px;" onclick="toggleTrafficSimulation()" id="btn-traffic">
-              Pause Traffic
-            </button>
-          </h3>
-          <svg class="chart-svg" id="traffic-chart" viewBox="0 0 500 200">
-            <defs>
-              <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="var(--accent-primary)"></stop>
-                <stop offset="100%" stop-color="var(--accent-primary)" stop-opacity="0"></stop>
-              </linearGradient>
-            </defs>
-            <!-- Grid Lines -->
-            <line class="chart-grid-line" x1="0" y1="50" x2="500" y2="50" />
-            <line class="chart-grid-line" x1="0" y1="100" x2="500" y2="100" />
-            <line class="chart-grid-line" x1="0" y1="150" x2="500" y2="150" />
-            
-            <path class="chart-area" d="M 0 200 L 0 120 L 50 140 L 100 90 L 150 110 L 200 60 L 250 85 L 300 130 L 350 70 L 400 50 L 450 110 L 500 80 L 500 200 Z" id="chart-path-area" />
-            <path class="chart-line" d="M 0 120 L 50 140 L 100 90 L 150 110 L 200 60 L 250 85 L 300 130 L 350 70 L 400 50 L 450 110 L 500 80" id="chart-path-line" />
+        <div class="metric-bar-group">
+          <div class="metric-header">
+            <span class="metric-name">Calculated Latency (End-to-End)</span>
+            <span class="metric-val" id="metric-latency-val">420 ms</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="metric-latency-fill" style="width: 42%;"></div>
+          </div>
+        </div>
+
+        <div class="metric-bar-group">
+          <div class="metric-header">
+            <span class="metric-name">Estimated Infrastructure Cost (Monthly)</span>
+            <span class="metric-val" id="metric-cost-val">$185</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="metric-cost-fill" style="width: 15%;"></div>
+          </div>
+        </div>
+
+        <div class="metric-bar-group">
+          <div class="metric-header">
+            <span class="metric-name">Hallucination Risk Probability</span>
+            <span class="metric-val" id="metric-risk-val">12%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="metric-risk-fill" style="width: 12%; background: var(--color-rose);"></div>
+          </div>
+        </div>
+
+        <div class="metric-bar-group">
+          <div class="metric-header">
+            <span class="metric-name">Overall Architecture Confidence Score</span>
+            <span class="metric-val" id="metric-confidence-val">90.2%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="metric-confidence-fill" style="width: 90.2%; background: var(--color-emerald);"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Evaluation Dashboard Mock -->
+  <section id="eval-dashboard" class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Evaluation Frameworks</span>
+      <h2>RAGAS Quality Evaluation</h2>
+      <p>Automated evaluation scores updated dynamically based on sandbox configuration.</p>
+    </div>
+
+    <div class="eval-dashboard-grid">
+      <!-- Faithfulness -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-faithfulness" cx="50" cy="50" r="45" stroke="var(--color-emerald)"></circle>
           </svg>
+          <div class="ring-text" id="ring-text-faithfulness">92%</div>
         </div>
+        <h4>Faithfulness</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Measures if the generated answer is derived exclusively from the retrieved contexts.</p>
+      </div>
 
-        <!-- Infrastructure setup stats -->
-        <div class="card">
-          <h3>Production RAG Stack Architecture</h3>
-          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem; margin-top: 10px;">
-            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
-              <span style="color: var(--color-text-secondary);">Vector Database</span>
-              <span style="font-weight: 600; color: #fff;">Qdrant Cloud (Distributed cluster)</span>
-            </li>
-            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
-              <span style="color: var(--color-text-secondary);">Embedding Model</span>
-              <span style="font-weight: 600; color: #fff;">text-embedding-3-small (1536-dim)</span>
-            </li>
-            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
-              <span style="color: var(--color-text-secondary);">LLM Provider</span>
-              <span style="font-weight: 600; color: #fff;">Gemini 1.5 Pro / GPT-4o Mix</span>
-            </li>
-            <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">
-              <span style="color: var(--color-text-secondary);">Caching Layer</span>
-              <span style="font-weight: 600; color: #fff;">Semantic Cache (Redis + Similarity check)</span>
-            </li>
-          </ul>
+      <!-- Answer Relevance -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-relevance" cx="50" cy="50" r="45" stroke="var(--color-emerald)"></circle>
+          </svg>
+          <div class="ring-text" id="ring-text-relevance">88%</div>
+        </div>
+        <h4>Answer Relevance</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Measures if the response addresses the query directly without tangential bloat.</p>
+      </div>
+
+      <!-- Context Precision -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-precision" cx="50" cy="50" r="45" stroke="var(--color-emerald)"></circle>
+          </svg>
+          <div class="ring-text" id="ring-text-precision">90%</div>
+        </div>
+        <h4>Context Precision</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Measures whether retrieved context matches exact relevance expectations.</p>
+      </div>
+
+      <!-- Context Recall -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-recall" cx="50" cy="50" r="45" stroke="var(--color-emerald)"></circle>
+          </svg>
+          <div class="ring-text" id="ring-text-recall">84%</div>
+        </div>
+        <h4>Context Recall</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Measures the ratio of gold-standard references found in retrieved chunks.</p>
+      </div>
+
+      <!-- Groundedness -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-groundedness" cx="50" cy="50" r="45" stroke="var(--color-emerald)"></circle>
+          </svg>
+          <div class="ring-text" id="ring-text-groundedness">94%</div>
+        </div>
+        <h4>Groundedness</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Factual compliance checking, detecting claims made without source proof.</p>
+      </div>
+
+      <!-- Citation Coverage -->
+      <div class="eval-card">
+        <div class="eval-score-ring">
+          <svg class="ring-svg">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-fill" id="ring-fill-citation" cx="50" cy="50" r="45" stroke="var(--color-cyan)"></circle>
+          </svg>
+          <div class="ring-text" id="ring-text-citation">96%</div>
+        </div>
+        <h4>Citation Coverage</h4>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Validates what percentage of output assertions are linked to a citation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Production Concerns -->
+  <section id="production-concerns" class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Production Infrastructure</span>
+      <h2>Scale & Enterprise Challenges</h2>
+      <p>Critical considerations when moving RAG designs into active client-facing environments.</p>
+    </div>
+
+    <div class="concern-list">
+      <!-- 1 -->
+      <div class="concern-item">
+        <div class="concern-number">01</div>
+        <div class="concern-body">
+          <h4>Semantic Caching</h4>
+          <p>Deduplicating LLM inferences by checking user query cosine similarity against database caches, reducing api latency & overall transaction costs.</p>
         </div>
       </div>
-    </section>
+      <!-- 2 -->
+      <div class="concern-item">
+        <div class="concern-number">02</div>
+        <div class="concern-body">
+          <h4>Queue-based Ingestion</h4>
+          <p>Processing thousands of documents asynchronously using brokers (e.g. RabbitMQ, Kafka) so parser bottlenecks do not drop payloads.</p>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="concern-item">
+        <div class="concern-number">03</div>
+        <div class="concern-body">
+          <h4>Batch Embedding Pipelines</h4>
+          <p>Grouping text nodes into batches before sending to LLM/embedding servers to handle network timeouts and optimize token billing limits.</p>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="concern-item">
+        <div class="concern-number">04</div>
+        <div class="concern-body">
+          <h4>Vector Index Sharding</h4>
+          <p>Scaling database index storage partitions across multiple server instances to guarantee sub-10ms similarity queries under high volume traffic.</p>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="concern-item">
+        <div class="concern-number">05</div>
+        <div class="concern-body">
+          <h4>Multi-Tenant Metadata Filters</h4>
+          <p>Injecting absolute tenant ID keys at query time to prevent information leaks and ensure secure data partitioning across organizations.</p>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="concern-item">
+        <div class="concern-number">06</div>
+        <div class="concern-body">
+          <h4>Observability & Cost Monitoring</h4>
+          <p>Continuous monitoring of request-level token spend, model latency breakdowns, and caching rate logs for infrastructure cost controls.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  </main>
+  <!-- Section: Roadmap -->
+  <section class="container section-padding">
+    <div class="section-header">
+      <span class="badge-tag">Project Schedule</span>
+      <h2>Development Roadmap</h2>
+      <p>Following DevJam's architectural blueprint for shipping production search systems.</p>
+    </div>
 
-  <script>
-    // ----------------------------------------------------
-    // Tab Navigation Logic
-    // ----------------------------------------------------
-    const titles = {
-      chunking: { title: "Chunking Strategy Lab", subtitle: "Optimize document parsing and overlap strategies for maximize vector accuracy." },
-      retrieval: { title: "Retrieval Playground", subtitle: "Compare vector similarity vs keyword BM25 vs hybrid search models." },
-      reranking: { title: "Cross-Encoder Reranking Simulator", subtitle: "See how multi-stage retrieval models prioritize precision after initial vector extraction." },
-      citations: { title: "Citation & Guardrails Sandbox", subtitle: "Trace answer claims to source documents and validate factual groundedness." },
-      evaluation: { title: "Automated RAG Evaluation Suite", subtitle: "Measure system quality using industry standard RAGAS and TruLens frameworks." },
-      production: { title: "Production Infrastructure Observability", subtitle: "Real-time analytics, cost tracking, and system performance benchmarks." }
-    };
+    <div class="roadmap-timeline">
+      <div class="roadmap-step completed">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 1: Static Architecture Simulator <span class="badge-tag" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.2); color:var(--color-emerald); margin:0;">Shipped</span></h4>
+        <p>Interactive playground layout explorer, design tokens, and parameter-based simulator metrics calculations.</p>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 2: Layout Ingestion & Chunking Labs</h4>
+        <p>Interactive interface to upload user files (.pdf, .txt) and view visual overlays comparing recursive split structures.</p>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 3: Dense Vector Embeddings & Storage</h4>
+        <p>Running local inference using sentence-transformers, storage inside Qdrant Vector database, and basic indexing configuration.</p>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 4: Hybrid RRF Search & Cross-Encoder Reranking</h4>
+        <p>Adding BM25 sparse index layers and reranking pipelines to maximize Top-K search relevance and precision outputs.</p>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 5: Citations Engine & Guardrails Evaluation</h4>
+        <p>Integrating hallucination validators, post-generation checks, and citation mappings using framework evaluations (Ragas).</p>
+      </div>
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <h4>Phase 6: Production Diagnostics Observability</h4>
+        <p>Instrumenting spans with OpenTelemetry, adding semantic cache configs, latency logs, and monitoring charts.</p>
+      </div>
+    </div>
+  </section>
 
-    function switchTab(tabId) {
-      // Toggle nav active class
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => item.innerText.toLowerCase().includes(tabId.substring(0, 4)));
-      if (activeNav) activeNav.classList.add('active');
+  <!-- Section: Collaboration -->
+  <section id="collaboration" class="container section-padding">
+    <div class="glass-panel collab-box">
+      <h2>Open Source Collaboration</h2>
+      <p>DevJam is a developer community roadmap project built by engineers, for engineers. We welcome code contributions, documentation, and reviews from developers passionate about AI search infrastructure.</p>
+      <div class="btn-group">
+        <a href="https://github.com/devJam2026/enterprise-rag-system-designer" target="_blank" class="btn btn-gradient">
+          Explore Repository Tasks
+        </a>
+        <a href="https://devjam.in" target="_blank" class="btn btn-outline">Visit DevJam.in</a>
+      </div>
+    </div>
+  </section>
 
-      // Toggle panels
-      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-      document.getElementById(`panel-${tabId}`).classList.add('active');
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 DevJam Engineering Roadmap. Enterprise RAG System Designer is open-source under MIT License.</p>
+    </div>
+  </footer>
 
-      // Update titles
-      document.getElementById('main-title').innerText = titles[tabId].title;
-      document.getElementById('main-subtitle').innerText = titles[tabId].subtitle;
-    }
-
-    // ----------------------------------------------------
-    // Chunking Simulator Logic
-    // ----------------------------------------------------
-    function updateChunkingSliders() {
-      const strategy = document.getElementById('chunk-strategy').value;
-      const overlapContainer = document.getElementById('slider-chunk-overlap');
-      if (strategy === 'semantic') {
-        overlapContainer.style.opacity = '0.3';
-        overlapContainer.style.pointerEvents = 'none';
-      } else {
-        overlapContainer.style.opacity = '1';
-        overlapContainer.style.pointerEvents = 'auto';
-      }
-      runChunking();
-    }
-
-    function runChunking() {
-      const text = document.getElementById('chunking-source-text').value;
-      const strategy = document.getElementById('chunk-strategy').value;
-      const size = parseInt(document.getElementById('input-chunk-size').value);
-      const overlap = parseInt(document.getElementById('input-chunk-overlap').value);
-
-      document.getElementById('val-chunk-size').innerText = size;
-      document.getElementById('val-chunk-overlap').innerText = overlap;
-
-      const container = document.getElementById('chunks-output-container');
-      container.innerHTML = '';
-
-      let chunks = [];
-      if (strategy === 'fixed') {
-        let index = 0;
-        let chunkIdx = 1;
-        while (index < text.length) {
-          let end = Math.min(index + size, text.length);
-          let chunkText = text.substring(index, end);
-          chunks.push({
-            id: `Doc-A, Chunk ${chunkIdx++}`,
-            text: chunkText,
-            start: index,
-            end: end,
-            overlap: index > 0 ? overlap : 0
-          });
-          index += (size - overlap);
-        }
-      } else if (strategy === 'recursive') {
-        // Mock recursive splitting by sentences/periods
-        const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [text];
-        let currentChunk = "";
-        let chunkIdx = 1;
-        sentences.forEach((sentence) => {
-          if ((currentChunk + sentence).length > size && currentChunk.length > 0) {
-            chunks.push({
-              id: `Doc-A, Chunk ${chunkIdx++}`,
-              text: currentChunk.trim(),
-              start: 0,
-              end: currentChunk.length
-            });
-            currentChunk = currentChunk.substring(currentChunk.length - overlap);
-          }
-          currentChunk += sentence;
-        });
-        if (currentChunk.trim().length > 0) {
-          chunks.push({
-            id: `Doc-A, Chunk ${chunkIdx}`,
-            text: currentChunk.trim(),
-            start: 0,
-            end: currentChunk.length
-          });
-        }
-      } else if (strategy === 'semantic') {
-        // Split by sentences, group them by semantic boundaries
-        const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [text];
-        let chunkIdx = 1;
-        for (let i = 0; i < sentences.length; i += 2) {
-          let part = (sentences[i] || "") + (sentences[i+1] || "");
-          chunks.push({
-            id: `Doc-A, Chunk ${chunkIdx++}`,
-            text: part.trim(),
-            start: 0,
-            end: part.length,
-            semantic: true
-          });
-        }
-      } else if (strategy === 'sliding') {
-        let index = 0;
-        let chunkIdx = 1;
-        while (index < text.length - 40) {
-          let end = Math.min(index + size, text.length);
-          chunks.push({
-            id: `Doc-A, Chunk ${chunkIdx++}`,
-            text: text.substring(index, end),
-            start: index,
-            end: end
-          });
-          index += Math.max(30, Math.floor(size / 2));
-        }
-      }
-
-      // Render Chunks
-      chunks.forEach((c) => {
-        const div = document.createElement('div');
-        div.className = 'chunk-block';
-        
-        let headerHtml = `<div class="chunk-header"><span class="chunk-id">${c.id}</span>`;
-        if (c.overlap && c.overlap > 0) {
-          headerHtml += `<span class="chunk-meta">Overlap: ${c.overlap} chars</span>`;
-        } else if (c.semantic) {
-          headerHtml += `<span class="chunk-meta" style="color: var(--accent-info);">Similarity Threshold Check: PASS</span>`;
-        } else {
-          headerHtml += `<span class="chunk-meta">Size: ${c.text.length} chars</span>`;
-        }
-        headerHtml += `</div>`;
-
-        let bodyHtml = `<p class="chunk-text">`;
-        if (c.overlap && c.overlap > 0) {
-          bodyHtml += `<span class="overlap-highlight">${c.text.substring(0, c.overlap)}</span>` + c.text.substring(c.overlap);
-        } else {
-          bodyHtml += c.text;
-        }
-        bodyHtml += `</p>`;
-
-        div.innerHTML = headerHtml + bodyHtml;
-        container.appendChild(div);
-      });
-
-      // Update counters
-      document.getElementById('info-total-chunks').innerText = chunks.length;
-      document.getElementById('info-total-tokens').innerText = Math.round(text.length / 4.2);
-    }
-
-    // ----------------------------------------------------
-    // Retrieval Playground Logic
-    // ----------------------------------------------------
-    const mockDatabase = [
-      { id: "Doc-A, Chunk 1", score: 0.94, text: "Our company financial performance in fiscal year 2025 demonstrated strong growth, with total revenue increasing by 12% to reach $45.2 million." },
-      { id: "Doc-A, Chunk 2", score: 0.81, text: "Operating income expanded, reaching $8.4 million due to optimized cloud hosting frameworks and reduced operational overhead." },
-      { id: "Doc-A, Chunk 3", score: 0.72, text: "Cash flow from operations remained resilient at $11.8 million, allowing full funding of our new AI retrieval infrastructure projects." },
-      { id: "Doc-A, Chunk 4", score: 0.65, text: "Marketing and customer acquisition costs rose by 22%, driven by aggressive domestic product positioning." }
-    ];
-
-    function runRetrieval() {
-      const query = document.getElementById('retrieval-query').value.toLowerCase();
-      const strategy = document.getElementById('retrieval-strategy').value;
-      const topK = parseInt(document.getElementById('input-top-k').value);
-      const container = document.getElementById('retrieval-results-container');
-      
-      container.innerHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem; text-align: center;">Running RAG index lookup...</p>';
-
-      setTimeout(() => {
-        container.innerHTML = '';
-        
-        // Filter & rank based on simulated keyword overlap / match scores
-        let results = mockDatabase.map(doc => {
-          let scoreBoost = 0;
-          if (query.includes('revenue') && doc.text.includes('revenue')) scoreBoost += 0.15;
-          if (query.includes('cost') && doc.text.includes('costs')) scoreBoost += 0.15;
-          if (query.includes('cloud') && doc.text.includes('cloud')) scoreBoost += 0.15;
-          if (query.includes('cash') && doc.text.includes('Cash')) scoreBoost += 0.15;
-          
-          let baseVal = doc.score;
-          if (strategy === 'bm25') {
-            baseVal = scoreBoost > 0 ? 0.7 + scoreBoost : 0.2;
-          } else if (strategy === 'hybrid') {
-            baseVal = (baseVal + (scoreBoost > 0 ? 0.85 : 0.3)) / 2;
-          }
-          return { ...doc, dynamicScore: Math.min(0.99, baseVal).toFixed(2) };
-        });
-
-        results.sort((a, b) => b.dynamicScore - a.dynamicScore);
-        const sliced = results.slice(0, topK);
-
-        sliced.forEach(hit => {
-          const card = document.createElement('div');
-          card.className = 'retrieval-card';
-          
-          card.innerHTML = `
-            <div class="retrieval-header">
-              <span class="doc-source">${hit.id}</span>
-              <div class="score-meter">
-                <span style="color: var(--color-text-muted)">Relevance Score</span>
-                <span style="font-weight: 700; color: var(--accent-info); font-family: 'Fira Code', monospace;">${hit.dynamicScore}</span>
-                <div class="score-bar">
-                  <div class="score-fill" style="width: ${hit.dynamicScore * 100}%"></div>
-                </div>
-              </div>
-            </div>
-            <p style="font-size: 0.85rem; line-height: 1.5; color: var(--color-text-secondary);">${hit.text}</p>
-          `;
-          container.appendChild(card);
-        });
-      }, 400);
-    }
-
-    // ----------------------------------------------------
-    // Reranking Simulator Logic
-    // ----------------------------------------------------
-    const rerankData = [
-      { id: "Doc-A, Chunk 2", vscore: "0.85", rscore: "0.96", rankBefore: 1, rankAfter: 1, text: "Operating income expanded, reaching $8.4 million due to optimized cloud hosting frameworks and reduced operational overhead.", desc: "Highly relevant to optimized cloud hosting costs." },
-      { id: "Doc-A, Chunk 3", vscore: "0.72", rscore: "0.88", rankBefore: 2, rankAfter: 2, text: "Cash flow from operations remained resilient at $11.8 million, allowing full funding of our new AI retrieval infrastructure projects.", desc: "Mentions general projects funding." },
-      { id: "Doc-A, Chunk 4", vscore: "0.68", rscore: "0.55", rankBefore: 3, rankAfter: 3, text: "Marketing and customer acquisition costs rose by 22%, driven by aggressive domestic product positioning.", desc: "Mentions costs, but unrelated to cloud hosting." }
-    ];
-
-    function initRerankLists() {
-      const beforeList = document.getElementById('rerank-list-before');
-      const afterList = document.getElementById('rerank-list-after');
-      
-      beforeList.innerHTML = '';
-      afterList.innerHTML = '';
-
-      rerankData.forEach(item => {
-        beforeList.innerHTML += `
-          <div class="rerank-item" id="before-${item.id.replace(', ', '-')}">
-            <span class="rank-badge">${item.rankBefore}</span>
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--color-text-muted);">
-              <span>${item.id}</span>
-              <span style="font-family:'Fira Code'; color:var(--accent-primary);">Vec: ${item.vscore}</span>
-            </div>
-            <p style="font-size:0.8rem; color:var(--color-text-secondary);">${item.text}</p>
-          </div>
-        `;
-
-        afterList.innerHTML += `
-          <div class="rerank-item" id="after-${item.id.replace(', ', '-')}">
-            <span class="rank-badge" style="background:var(--color-text-muted);">${item.rankBefore}</span>
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--color-text-muted);">
-              <span>${item.id}</span>
-              <span style="font-family:'Fira Code';">CE: --</span>
-            </div>
-            <p style="font-size:0.8rem; color:var(--color-text-muted);">${item.text}</p>
-          </div>
-        `;
-      });
-    }
-
-    function runReranking() {
-      const statusText = document.getElementById('rerank-status-text');
-      statusText.innerText = "Re-scoring...";
-      statusText.style.color = "var(--accent-warning)";
-
-      setTimeout(() => {
-        const afterList = document.getElementById('rerank-list-after');
-        afterList.innerHTML = '';
-
-        // Sort items after reranking
-        const sorted = [...rerankData].sort((a, b) => b.rscore - a.rscore);
-
-        sorted.forEach((item, index) => {
-          const isBoosted = item.id === "Doc-A, Chunk 2";
-          const cardClass = isBoosted ? 'rerank-item boosted' : 'rerank-item';
-          
-          afterList.innerHTML += `
-            <div class="${cardClass}" style="transform: scale(0.95); opacity: 0;">
-              <span class="rank-badge">${index + 1}</span>
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--color-text-secondary);">
-                <span style="font-weight:600;">${item.id}</span>
-                <span style="font-family:'Fira Code'; color:var(--accent-success);">CE Rerank: ${item.rscore}</span>
-              </div>
-              <p style="font-size:0.8rem; color:var(--color-text-primary);">${item.text}</p>
-            </div>
-          `;
-        });
-
-        // Trigger animations
-        let items = afterList.querySelectorAll('.rerank-item');
-        items.forEach((item, idx) => {
-          setTimeout(() => {
-            item.style.transform = 'scale(1)';
-            item.style.opacity = '1';
-          }, idx * 150);
-        });
-
-        statusText.innerText = "Completed";
-        statusText.style.color = "var(--accent-success)";
-      }, 800);
-    }
-
-    // ----------------------------------------------------
-    // Citation & Guardrails Logic
-    // ----------------------------------------------------
-    const sourceChunks = {
-      1: { title: "Doc-A, Chunk 1", score: "Cosine Similarity: 0.94", text: "Our company financial performance in fiscal year 2025 demonstrated strong growth, with total revenue increasing by 12% to reach $45.2 million compared to $40.3 million in 2024." },
-      2: { title: "Doc-A, Chunk 2", score: "Cosine Similarity: 0.88", text: "Operating income also expanded, reaching $8.4 million due to optimized cloud hosting frameworks and reduced operational overhead." },
-      3: { title: "Doc-A, Chunk 3", score: "Cosine Similarity: 0.81", text: "Cash flow from operations remained resilient at $11.8 million, allowing full funding of our new AI retrieval infrastructure and Vector DB scaling projects." }
-    };
-
-    function highlightSource(citationId) {
-      // Clear previous active tags
-      document.querySelectorAll('.cite-tag').forEach(tag => tag.classList.remove('active'));
-      
-      // Highlight current tag
-      const clickedTag = Array.from(document.querySelectorAll('.cite-tag')).find(tag => tag.innerText.includes(citationId));
-      if (clickedTag) clickedTag.classList.add('active');
-
-      // Update source viewer card
-      const source = sourceChunks[citationId];
-      if (source) {
-        document.getElementById('source-card-title').innerText = source.title;
-        document.getElementById('source-card-similarity').innerText = source.score;
-        document.getElementById('source-card-text').innerText = source.text;
-      }
-    }
-
-    function toggleHallucinationSim() {
-      const active = document.getElementById('toggle-hallucination').checked;
-      const textBlock = document.getElementById('llm-response-text');
-      const badge = document.getElementById('groundedness-status-badge');
-      const alertBox = document.getElementById('hallucination-alert');
-      const claimsRatio = document.getElementById('claims-ratio');
-
-      if (active) {
-        textBlock.innerHTML = `
-          Our financial metrics show that the company achieved a total revenue of $45.2M <span class="cite-tag" onclick="highlightSource(1)">[Doc-A, Chunk 1]</span>, which is a 12% growth year-over-year. Operating costs decreased to $8.4M <span class="cite-tag" onclick="highlightSource(2)">[Doc-A, Chunk 2]</span>. <span style="border-bottom: 2px dashed var(--accent-danger); color: #fecaca;">Overall company profit margins reached a record high of 35% across all regions.</span>
-        `;
-        badge.innerText = "FAIL (Groundedness)";
-        badge.className = "badge badge-danger";
-        alertBox.classList.add('active');
-        claimsRatio.innerText = "2 / 3 (66%)";
-        claimsRatio.style.color = "var(--accent-danger)";
-      } else {
-        textBlock.innerHTML = `
-          Our financial metrics show that the company achieved a total revenue of $45.2M <span class="cite-tag" onclick="highlightSource(1)">[Doc-A, Chunk 1]</span>, which is a 12% growth year-over-year. Operating costs decreased to $8.4M <span class="cite-tag" onclick="highlightSource(2)">[Doc-A, Chunk 2]</span> thanks to cloud infrastructure efficiency gains. This robust performance generated $11.8M in cash flow <span class="cite-tag" onclick="highlightSource(3)">[Doc-A, Chunk 3]</span> to fund expansion projects.
-        `;
-        badge.innerText = "PASS";
-        badge.className = "badge badge-success";
-        alertBox.classList.remove('active');
-        claimsRatio.innerText = "3 / 3 (100%)";
-        claimsRatio.style.color = "#fff";
-      }
-    }
-
-    // ----------------------------------------------------
-    // Evaluation Suite Logic
-    // ----------------------------------------------------
-    function runEvaluationSuite() {
-      // Animate progress/dash offsets on gauges
-      const gauges = {
-        faithfulness: { target: 94, elementId: 'gauge-faithfulness', textId: 'val-gauge-faithfulness' },
-        relevance: { target: 89, elementId: 'gauge-relevance', textId: 'val-gauge-relevance' },
-        precision: { target: 92, elementId: 'gauge-precision', textId: 'val-gauge-precision' },
-        recall: { target: 86, elementId: 'gauge-recall', textId: 'val-gauge-recall' }
-      };
-
-      Object.keys(gauges).forEach(key => {
-        const info = gauges[key];
-        const circle = document.getElementById(info.elementId);
-        const text = document.getElementById(info.textId);
-
-        // Reset first
-        circle.style.strokeDashoffset = 314;
-        text.innerText = "0%";
-
-        setTimeout(() => {
-          const offset = 314 - (314 * info.target) / 100;
-          circle.style.strokeDashoffset = offset;
-          text.innerText = `${info.target}%`;
-        }, 300);
-      });
-    }
-
-    // ----------------------------------------------------
-    // Production Dashboard & Live Chart Simulation
-    // ----------------------------------------------------
-    let trafficInterval;
-    let trafficData = [120, 140, 90, 110, 60, 85, 130, 70, 50, 110, 80];
-
-    function toggleTrafficSimulation() {
-      const btn = document.getElementById('btn-traffic');
-      if (trafficInterval) {
-        clearInterval(trafficInterval);
-        trafficInterval = null;
-        btn.innerText = "Resume Traffic";
-      } else {
-        btn.innerText = "Pause Traffic";
-        startTrafficSim();
-      }
-    }
-
-    function startTrafficSim() {
-      trafficInterval = setInterval(() => {
-        // Add new QPS data point, shift first
-        const nextVal = Math.floor(Math.random() * 150) + 40;
-        trafficData.push(nextVal);
-        trafficData.shift();
-
-        // Update live metric indicators slightly
-        const currentLatency = (1.5 + Math.random() * 0.6).toFixed(2);
-        document.getElementById('prod-latency').innerText = `${currentLatency}s`;
-
-        const currentCache = (65 + Math.random() * 6).toFixed(1);
-        document.getElementById('prod-cache').innerText = `${currentCache}%`;
-
-        // Recalculate SVG Path points
-        const pathLine = document.getElementById('chart-path-line');
-        const pathArea = document.getElementById('chart-path-area');
-        
-        let points = [];
-        let areaPoints = ["0 200"];
-        
-        const widthStep = 500 / (trafficData.length - 1);
-        
-        trafficData.forEach((val, index) => {
-          // Normalize val (0 - 200 range)
-          const y = 200 - (val / 200) * 150 - 20; 
-          const x = index * widthStep;
-          points.push(`${x} ${y}`);
-          areaPoints.push(`${x} ${y}`);
-        });
-
-        areaPoints.push("500 200");
-
-        pathLine.setAttribute('d', `M ${points.join(' L ')}`);
-        pathArea.setAttribute('d', `M ${areaPoints.join(' L ')} Z`);
-      }, 1500);
-    }
-
-    // ----------------------------------------------------
-    // Page Initalization
-    // ----------------------------------------------------
-    window.onload = () => {
-      runChunking();
-      runRetrieval();
-      initRerankLists();
-      startTrafficSim();
-    };
-  </script>
+  <!-- External Simulator Script -->
+  <script src="script.js"></script>
 </body>
 </html>
