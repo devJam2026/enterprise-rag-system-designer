@@ -2,6 +2,9 @@
 
 > Design, simulate, and evaluate production-grade Retrieval-Augmented Generation (RAG) architectures for enterprise-scale AI systems.
 
+<img width="937" height="391" alt="image" src="https://github.com/user-attachments/assets/8fa9b9c4-60d4-4013-aee9-ac7f73879c93" />
+
+
 ### 🌐 Live Landing Page & Interactive Simulator
 The interactive architecture explorer and settings simulator is fully live in this repository!
 - Open [index.html](file:///c:/Users/AVICK/Avick_Projects/ai_project/enterprise-rag-system-designer/index.html) in your browser.
