@@ -286,6 +286,27 @@ function updateEvalDashboard(precision, risk) {
   });
 }
 
+// Mobile navigation bar toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+
+  if (toggleBtn && navLinks) {
+    toggleBtn.addEventListener("click", () => {
+      toggleBtn.classList.toggle("active");
+      navLinks.classList.toggle("show");
+    });
+
+    // Close mobile menu when a link is clicked
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        toggleBtn.classList.remove("active");
+        navLinks.classList.remove("show");
+      });
+    });
+  }
+});
+
 // Page Initialize
 window.onload = () => {
   // Pre-select Document block on load
